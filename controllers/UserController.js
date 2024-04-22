@@ -52,7 +52,7 @@ class UserController {
         role
       })
 
-      const token = await jwt_generat({ email: newUser.email, id: newUser._id })
+      const token = await jwt_generat({ email: newUser.email, id: newUser._id, role: newUser.role })
 
       newUser.token = token;
       await newUser.save();
@@ -90,7 +90,7 @@ class UserController {
         return res.status(401).json({ error: 'Incorrect password' });
       }
       //creat token
-      const token = await jwt_generat({ email: user.email, id: user._id })
+      const token = await jwt_generat({ email: user.email, id: user._id, role: user.role })
 
       // Successful login
       res.status(200).json({ message: 'Login successful', user });
