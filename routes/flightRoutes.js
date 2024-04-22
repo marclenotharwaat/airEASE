@@ -10,7 +10,7 @@ const userRole = require('../utility/userRole');
 router.post('/createFlight',verifyToken,allow_to(userRole.ADMIN), flightController.createFlight);
 
 // Route for retrieving all flights
-router.get('/getAllFlights',flightController.getAllFlights);
+router.get('/getAllFlights',verifyToken,flightController.getAllFlights);
 
 // Route for retrieving a specific flight by ID
 router.get('/:id', flightController.getFlightById);
