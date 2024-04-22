@@ -4,6 +4,7 @@ const connectDb = require('./config/db');
 const port = process.env.PORT; 
 const startWebSocketServer = require('./wsServer');
 const flight =require('./models/flight_model');
+const flightRoutes = require("./routes/flightRoutes")
 connectDb();
 
 const app = express();
@@ -15,6 +16,8 @@ app.post('/flight',async(req,res) =>{
    await journey.save();
    res.send("Flight added");
 })
+//routes flight
+app.use('/flight',flightRoutes);
 
 // Start the server
 app.listen(port, () => {
