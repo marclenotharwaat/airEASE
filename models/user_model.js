@@ -1,25 +1,29 @@
-const mongoos = require('mongoose');
+const mongoose = require('mongoose');
 const validator = require('validator');
-const userRole = require('../utility/userRole');
-const userSchema = new mongoos.Schema(
+const userRole = require('../utility/userRole')
+const userSchema = new mongoose.Schema(
     {
         firstName: {
             type: String,
-            require: true
+            require: true,
+            trim: true
         },
         lastName: {
             type: String,
-            require: true
+            require: true,
+            trim: true
         },
         email: {
             type: String,
             require: true,
             unique: true,
+            trim: true,
             validate: [validator.isEmail, "filed must be a valid email address"]
         },
         password: {
             type: String,
-            require: true
+            require: true,
+            trim: true
         },
         token: {
             type: String
@@ -31,4 +35,6 @@ const userSchema = new mongoos.Schema(
         },
     }
 )
-module.exports = mongoos.model('User', userSchema)
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;

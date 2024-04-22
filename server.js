@@ -1,23 +1,26 @@
 require('dotenv').config({ path: 'config.env' });
 const express = require('express');
 const connectDb = require('./config/db');
-const port = process.env.PORT; 
+const port = process.env.PORT;
 const startWebSocketServer = require('./wsServer');
-const flight =require('./models/flight_model');
+const flight = require('./models/flight_model');
 const flightRoutes = require("./routes/flightRoutes")
+const userRoutes = require("./routes/userRoutes")
 connectDb();
 
 const app = express();
 // Middleware
 app.use(express.json());
-app.post('/flight',async(req,res) =>{
-   const { from , to , departureDate , arrivalDate , price , busSeats , ecoSeats , flightNumber } =req.body;
-   const journey = new flight({ from , to , departureDate , arrivalDate , price , busSeats , ecoSeats , flightNumber })
-   await journey.save();
-   res.send("Flight added");
+app.post('/flight', async (req, res) => {
+    const { from, to, departureDate, arrivalDate, price, busSeats, ecoSeats, flightNumber } = req.body;
+    const journey = new flight({ from, to, departureDate, arrivalDate, price, busSeats, ecoSeats, flightNumber })
+    await journey.save();
+    res.send("Flight added");
 })
 //routes flight
-app.use('/flight',flightRoutes);
+app.use('/flight', flightRoutes);
+//routes User
+app.use('/users', userRoutes);
 
 // Start the server
 app.listen(port, () => {
