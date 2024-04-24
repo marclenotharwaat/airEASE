@@ -7,6 +7,7 @@ const flight = require('./models/flight_model');
 const flightRoutes = require("./routes/flightRoutes")
 const userRoutes = require("./routes/userRoutes")
 const httpStatus = require("./utility/https_status");
+const ticketRoutes = require("./routes/ticketRoutes")
 connectDb();
 
 const app = express();
@@ -18,6 +19,9 @@ app.post('/flight', async (req, res) => {
     await journey.save();
     res.send("Flight added");
 })
+
+//routes tickets
+app.use('/ticket', ticketRoutes);
 //routes flight
 app.use('/flight', flightRoutes);
 //routes User

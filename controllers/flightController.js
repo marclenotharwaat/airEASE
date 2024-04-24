@@ -5,45 +5,45 @@ const httpStatus = require("../utility/https_status");
 
 
 // Create a new flight
-const createFlight = async (req, res, next) => {
-  try {
-    const flightData = req.body;
+const createFlight = asyncWrapper(
+  async (req, res, next) => {
+    try {
+      const flightData = req.body;
 
-    // Check if the required fields are present in the request body
-    if (!flightData.from || !flightData.to || !flightData.departureDate || !flightData.arrivalDate || !flightData.price || !flightData.busSeats || !flightData.ecoSeats || !flightData.flightNumber) {
-      const error = AppError.create('Missing required fields in request body', 400, httpStatus.FAIL)
-      return next(error);
+      // Check if the required fields are present in the request body
+      if (!flightData.from || !flightData.to || !flightData.departureDate || !flightData.arrivalDate || !flightData.price || !flightData.busSeats || !flightData.ecoSeats ) {
+        const error = AppError.create('Missing required fields in request body', 400, httpStatus.FAIL)
+        return next(error);
+      }
+
+      // Check if arrival date is before departure date
+      if (flightData.arrivalDate < flightData.departureDate) {
+        const error = AppError.create("Arrival date cannot be before departure date", 400, httpStatus.FAIL)
+        return next(error);
+      }
+
+      const flight = new Flight(flightData);
+      const savedFlight = await flight.save();
+      res.status(201).json({ status: httpStatus.SUCCESS, data: { savedFlight } });
+    } catch (error) {
+
+      // Handle Mongoose validation errors
+      if (error.name === 'ValidationError') {
+        const error = AppError.create(error.message, 400, httpStatus.FAIL)
+        return next(error);
+      }
     }
-
-    // Check if arrival date is before departure date
-    if (flightData.arrivalDate < flightData.departureDate) {
-      const error = AppError.create("Arrival date cannot be before departure date", 400, httpStatus.FAIL)
-      return next(error);
-    }
-
-    const flight = new Flight(flightData);
-    const savedFlight = await flight.save();
-    res.status(201).json({ status: httpStatus.SUCCESS, data: { savedFlight } });
-  } catch (error) {
-
-    // Handle Mongoose validation errors
-    if (error.name === 'ValidationError') {
-      const error = AppError.create(error.message, 400, httpStatus.FAIL)
-      return next(error);
-    }
-  }
-}
+  })
 
 // Retrieve all flights
-const getAllFlights = async (req, res) => {
+const getAllFlights = asyncWrapper(async (req, res, next) => {
   const flights = await Flight.find();
   res.json({ status: httpStatus.SUCCESS, data: flights });
-
-}
+})
 
 // Retrieve a specific flight by ID
 const getFlightById = asyncWrapper(
-  async (req, res) => {
+  async (req, res, next) => {
 
     const flight = await Flight.findById(req.params.id);
     if (!flight) {
@@ -57,7 +57,7 @@ const getFlightById = asyncWrapper(
   })
 
 // Update a flight
-const updateFlight = async (req, res) => {
+const updateFlight = asyncWrapper(async (req, res, next) => {
   try {
     const flightData = req.body;
     const flight = await Flight.findByIdAndUpdate(req.params.id, flightData, { new: true });
@@ -70,10 +70,10 @@ const updateFlight = async (req, res) => {
     const err = AppError.create('An error occurred while updating the flight.', 500, httpStatus.Error)
     return next(err);
   }
-}
+})
 
 // Delete a flight
-const deleteFlight = async (req, res) => {
+const deleteFlight = asyncWrapper(async (req, res) => {
   try {
     const flight = await Flight.findByIdAndDelete(req.params.id);
     if (!flight) {
@@ -90,7 +90,7 @@ const deleteFlight = async (req, res) => {
     return next(err);
 
   }
-}
+})
 
 
 module.exports = {

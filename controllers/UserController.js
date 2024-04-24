@@ -3,78 +3,76 @@ const validator = require('validator');
 const jwt_generat = require('../utility/jwt_generat');
 const httpStatus = require("../utility/https_status");
 const asyncWrapper = require('../middleware/asyncWrapper');
+const AppError = require('../utility/app_error')
 
 const signup = asyncWrapper(
   async (req, res, next) => {
-    try {
-      // Validate data
-      const { firstName, lastName, email, password, role } = req.body;
 
+    // Validate data
+    const { firstName, lastName, email, password, role } = req.body;
 
+    // Check if all required fields are provided
+    if (!firstName || !lastName || !email || !password) {
+      const error = AppError.create('Please provide all required fields', 400, httpStatus.FAIL)
+      return next(error);
 
-      // Check if all required fields are provided
-      if (!firstName || !lastName || !email || !password) {
-        const error = AppError.create('Please provide all required fields', 400, httpStatus.FAIL)
-        return next(error);
-
-      }
-
-      // Validate firstName
-      if (firstName.trim().length === 0) {
-        const error = AppError.create('firstName cannot be empty', 400, httpStatus.FAIL)
-        return next(error);
-      }
-      if (lastName.trim().length === 0) {
-        const error = AppError.create('lastName cannot be empty', 400, httpStatus.FAIL)
-        return next(error);
-      }
-      // Validate email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        const error = AppError.create('Invalid email format', 400, httpStatus.FAIL)
-        return next(error);
-      }
-
-      // Validate password
-      if (password.length < 8) {
-        const error = AppError.create('Password should be at least 8 characters long', 400, httpStatus.FAIL)
-        return next(error);
-      }
-      if (!/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
-        const error = AppError.create('Password should contain both letters and numbers', 400, httpStatus.FAIL)
-        return next(error);
-      }
-
-      // Check if email is unique
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        const error = AppError.create('Email already exists', 400, httpStatus.FAIL)
-        return next(error);
-      }
-
-      // Create a new user
-      const newUser = new User({
-        firstName,
-        lastName,
-        email,
-        password,
-        role
-      })
-
-      const token = await jwt_generat({ email: newUser.email, id: newUser._id, role: newUser.role })
-
-      newUser.token = token;
-      await newUser.save();
-      // const newUser = await User.create(req.body);
-
-      // Return a success response
-      res.status(201).json({ status: httpStatus.SUCCESS, message: 'User created successfully', user: newUser });
-    } catch (error) {
-      // Handle any errors
-      console.error('Error in signup:', error);
-      const err = AppError.create(`Internal server error ${error.message}`, 500, httpStatus.Error)
-      return next(err);
     }
+
+    // Validate firstName
+    if (firstName.trim().length === 0) {
+      const error = AppError.create('firstName cannot be empty', 400, httpStatus.FAIL)
+      return next(error);
+    }
+
+    if (lastName.trim().length === 0) {
+      const error = AppError.create('lastName cannot be empty', 400, httpStatus.FAIL)
+      return next(error);
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      const error = AppError.create('Invalid email format', 400, httpStatus.FAIL)
+      return next(error);
+    }
+
+    // Validate password
+    if (password.length < 8) {
+      const error = AppError.create('Password should be at least 8 characters long', 400, httpStatus.FAIL)
+      return next(error);
+    }
+
+    if (!/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
+      const error = AppError.create('Password should contain both letters and numbers', 400, httpStatus.FAIL)
+      return next(error);
+    }
+
+    // Check if email is unique
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      const error = AppError.create('Email already exists', 400, httpStatus.FAIL)
+      return next(error);
+    }
+
+    // Create a new user
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password,
+      role
+    })
+
+    const token = await jwt_generat({ email: newUser.email, id: newUser._id, role: newUser.role })
+
+    newUser.token = token;
+    await newUser.save();
+    // const newUser = await User.create(req.body);
+
+    // Return a success response
+    res.status(201).json({ status: httpStatus.SUCCESS, message: 'User created successfully', user: newUser });
+
   }
 )
 

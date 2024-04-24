@@ -33,6 +33,27 @@ const userSchema = new mongoose.Schema(
             enum: [userRole.USER, userRole.ADMIN],
             default: userRole.USER
         },
+        /*----------------------------------------------------------*/
+        // address: {
+        //     type: String,
+        //     require: true,
+           
+        // },
+        // nationality: {
+        //     type: String,
+        //     require: true,
+           
+        // },
+        // PassportNumber: {
+        //     type: String,
+        //     require: true,
+           
+        // },
+        // mobilePhone: {
+        //     type: Number,
+        //     require: true,
+        //    /*----------------------------------------------------------*/
+        // },
     }
 )
 const User = mongoose.model('User', userSchema);

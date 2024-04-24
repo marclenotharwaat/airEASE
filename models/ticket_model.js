@@ -1,36 +1,32 @@
 const mongoose = require('mongoose');
+const objectId = mongoose.Types.ObjectId
+const ticketSchema = new mongoose.Schema(
+  {
+    ticketNumber: {
+      type: String,
+      unique: true
+    },
 
-const ticketSchema = new mongoose.Schema({
-  name: {
-    type: String
-  },
-  from: {
-    type: String
-  },
-  to: {
-    type: String
-  },
-  price: {
-    type: Number
-  },
-  departureDate: {
-    type: Date
-  },
-  arrivalDate: {
-    type: Date
-  },
-  bookingDate: {
-    type: Date,
-    default: Date.now,
-  },
-  busSeats: {
-    type: Number
-  },
-  ecoSeats: {
-    type: Number
-  },
-  flightNumber: String,
-});
+    bookingDate: {
+      type: Date,
+      default: Date.now,
+    },
+
+    kindOfTicket: {
+      type: String,
+    },
+
+    ticktOwner: {
+      type: objectId,
+      ref: 'User'
+    },
+
+    Flight: {
+      type: objectId,
+      ref: 'Flight'
+    },
+  }
+);
 
 const Ticket = mongoose.model('Ticket', ticketSchema);
 

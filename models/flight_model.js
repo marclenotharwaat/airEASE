@@ -22,9 +22,6 @@ const flightSchema = new mongoose.Schema({
   ecoSeats: {
     type: Number
   },
-  flightNumber: {
-    type: String
-  },
 });
 
 const Flight = mongoose.model('Flight', flightSchema);
