@@ -2,6 +2,7 @@ const asyncWrapper = require('../middleware/asyncWrapper');
 const Flight = require('../models/flight_model');
 const AppError = require("../utility/app_error");
 const httpStatus = require("../utility/https_status");
+const APIFeatures = require("../utility/APIFeatures");
 
 
 // Create a new flight
@@ -37,10 +38,28 @@ const createFlight = asyncWrapper(
 
 // Retrieve all flights
 const getAllFlights = asyncWrapper(async (req, res, next) => {
-  const flights = await Flight.find();
-  res.json({ status: httpStatus.SUCCESS, data: flights });
-})
+  try {
+    const features = new APIFeatures(Flight.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
+    const flights = await features.query;
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        flights,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err,
+    });
+  }
+}) 
 // Retrieve a specific flight by ID
 const getFlightById = asyncWrapper(
   async (req, res, next) => {

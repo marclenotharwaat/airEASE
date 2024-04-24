@@ -11,7 +11,7 @@ router.post('/createFlight',verifyToken,allow_to(userRole.ADMIN), flightControll
 
 // Route for retrieving all flights
 router.get('/getAllFlights',verifyToken,flightController.getAllFlights);
-
+ 
 // Route for retrieving a specific flight by ID
 router.get('/:id', flightController.getFlightById);
 

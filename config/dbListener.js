@@ -1,6 +1,6 @@
 const { EventEmitter } = require('events');
 const mongoose = require('mongoose');
-
+ 
 class DatabaseListener extends EventEmitter {
     constructor() {
         super();

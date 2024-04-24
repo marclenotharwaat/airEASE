@@ -7,7 +7,7 @@ function startWebSocketServer() {
         console.log('WebSocket server is listening on port 8080');
     });
     wss.on('connection', function connection(ws) {
-        console.log('New client connected');
+        console.log('New client connected'); 
         dbListener.on('change', (data) => {
             ws.send(JSON.stringify(data), (error) => {
                 if (error) {

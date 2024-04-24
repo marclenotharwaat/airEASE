@@ -9,4 +9,4 @@ class AppError extends Error {
         return this;
     }
 }
-module.exports = new AppError();
+module.exports = new AppError(); 

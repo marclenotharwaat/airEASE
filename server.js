@@ -10,7 +10,7 @@ const httpStatus = require("./utility/https_status");
 const ticketRoutes = require("./routes/ticketRoutes")
 connectDb();
 
-const app = express();
+const app = express(); 
 // Middleware
 app.use(express.json());
 app.post('/flight', async (req, res) => {

@@ -3,7 +3,7 @@ const flightModel = require('../models/flight_model');
 const ticketModel = require('../models/ticket_model');
 const httpStatus = require("../utility/https_status");
 const userModel = require('../models/user_model');
-
+ 
 const createTicket = asyncWrapper(async (req, res, next) => {
     const { kindOfTicket, ticktOwner, Flight } = req.body;
     const currentUser = await userModel.findById(ticktOwner);

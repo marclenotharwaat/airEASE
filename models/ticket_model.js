@@ -8,7 +8,7 @@ const ticketSchema = new mongoose.Schema(
     },
 
     bookingDate: {
-      type: Date,
+      type: Date, 
       default: Date.now,
     },
 

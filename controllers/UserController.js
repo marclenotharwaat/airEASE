@@ -4,7 +4,7 @@ const jwt_generat = require('../utility/jwt_generat');
 const httpStatus = require("../utility/https_status");
 const asyncWrapper = require('../middleware/asyncWrapper');
 const AppError = require('../utility/app_error')
-
+ 
 const signup = asyncWrapper(
   async (req, res, next) => {
 

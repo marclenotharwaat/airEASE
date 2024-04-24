@@ -10,4 +10,4 @@ router.delete('/', ticketController.deleteTicket)
 router.put("/:id", ticketController.updateTicket)
 
 
-module.exports = router;
+module.exports = router; 

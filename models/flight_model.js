@@ -5,7 +5,7 @@ const flightSchema = new mongoose.Schema({
     type: String
   },
   to: {
-    type: String
+    type: String 
   },
   departureDate: {
     type: Date
