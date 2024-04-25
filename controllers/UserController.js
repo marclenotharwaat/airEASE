@@ -4,7 +4,8 @@ const jwt_generat = require('../utility/jwt_generat');
 const httpStatus = require("../utility/https_status");
 const asyncWrapper = require('../middleware/asyncWrapper');
 const AppError = require('../utility/app_error')
- 
+const bcrypt = require('bcrypt');
+const sendEmail = require('../utility/send_Email')
 const signup = asyncWrapper(
   async (req, res, next) => {
 
@@ -54,13 +55,14 @@ const signup = asyncWrapper(
       const error = AppError.create('Email already exists', 400, httpStatus.FAIL)
       return next(error);
     }
+    const hashPassword = await bcrypt.hash(password, 10);
 
     // Create a new user
     const newUser = new User({
       firstName,
       lastName,
       email,
-      password,
+      password: hashPassword,
       role
     })
 
@@ -96,9 +98,10 @@ const login = asyncWrapper(
         const error = AppError.create('User not found', 404, httpStatus.FAIL)
         return next(error);
       }
+      const matchPassword = await bcrypt.compare(password, user.password);
 
       // Validate the password
-      if (user.password !== password) {
+      if (!matchPassword) {
         const error = AppError.create('Incorrect password', 401, httpStatus.FAIL)
         return next(error);
       }
@@ -162,6 +165,18 @@ const deleteUser = asyncWrapper(
       res.status(500).json({ error: 'Internal server error' });
     }
   })
+
+const forgetPass = asyncWrapper(
+  async (req, res, next) => {
+    const {email} = req.body;
+    // const user = await User.find({email})
+    // if(!user){
+    //   const error = AppError.create('uesr not found' ,404 , httpStatus.FAIL)
+    //   return next(error)
+    // }
+    sendEmail.sendEmail(email)
+  }
+)
 // Other controller methods...
 
 
@@ -171,5 +186,6 @@ module.exports = {
   signup,
   login,
   deleteUser,
-  updateUser
+  updateUser,
+  forgetPass
 }

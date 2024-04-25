@@ -8,7 +8,7 @@ const flightRoutes = require("./routes/flightRoutes")
 const userRoutes = require("./routes/userRoutes")
 const httpStatus = require("./utility/https_status");
 const ticketRoutes = require("./routes/ticketRoutes")
-connectDb();
+ connectDb().then();
 
 const app = express(); 
 // Middleware
