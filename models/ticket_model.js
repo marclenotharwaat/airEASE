@@ -6,12 +6,24 @@ const ticketSchema = new mongoose.Schema(
       type: String,
       unique: true
     },
-
+    from: {
+      type: String
+    },
+    distination: {
+      type: String
+    },
+    price: {
+      type: Number
+    },
     bookingDate: {
-      type: Date, 
+      type: Date,
       default: Date.now,
     },
-
+    departureDate: {
+      type: Date
+    },
+    abbreviationDistination: String,
+    abbreviationFrom: String,
     kindOfTicket: {
       type: String,
     },
@@ -25,6 +37,8 @@ const ticketSchema = new mongoose.Schema(
       type: objectId,
       ref: 'Flight'
     },
+    numOfFlightHour: String
+
   }
 );
 

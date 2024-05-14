@@ -4,9 +4,11 @@ const flightSchema = new mongoose.Schema({
   from: {
     type: String
   },
-  to: {
-    type: String 
+  distination : {
+    type: String
   },
+  abbreviationFrom:String ,
+  abbreviationDistination:String,
   departureDate: {
     type: Date
   },
@@ -22,6 +24,7 @@ const flightSchema = new mongoose.Schema({
   ecoSeats: {
     type: Number
   },
+  numOfFlightHour :String 
 });
 
 const Flight = mongoose.model('Flight', flightSchema);
