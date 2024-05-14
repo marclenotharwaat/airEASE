@@ -23,7 +23,7 @@ const createTicket = asyncWrapper(async (req, res, next) => {
     }
     let ticketNumber = null;
     if (kindOfTicket == "business") {
-        ticketModel.ticketNumber = ccurrentFlight.ecoSeats.toString() + " business";
+        ticketModel.ticketNumber = currentFlight.ecoSeats.toString() + " business";
         ticketNumber = ticketModel.ticketNumber
 
         if (currentFlight.busSeats == 0) {
@@ -82,7 +82,6 @@ const deleteTicket = asyncWrapper(async (req, res, next) => {
 
     const ticket = await new ticketModel({ ticktOwner, Flight }).deleteOne();
 
-
     let seatField;
     if (kindOfTicket === 'business') {
         seatField = { busSeats: +1 };
@@ -102,10 +101,19 @@ const deleteTicket = asyncWrapper(async (req, res, next) => {
 
 
 const getTicket = asyncWrapper(async (req, res, next) => {
-    const id = req.params.id
-    const ticket = await ticketModel.findById(id).populate(['ticktOwner', 'Flight'])
-    if (ticket) res.json({ status: httpStatus.SUCCESS, data: ticket })
-})
+    const userId = req.params; // Assuming userId is provided in the request parameters
+    try {       
+        const tickets = await ticketModel.find({ ticktOwner: userId.id });
+        if (tickets.length > 0) {
+            res.json({ status: httpStatus.SUCCESS, data: tickets });
+        } else {
+            res.json({ status: httpStatus.NOT_FOUND, message: "No tickets found for the specified user." });
+        }
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 
 const getAllTickets = asyncWrapper(
