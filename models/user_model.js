@@ -60,25 +60,18 @@ const userSchema = new mongoose.Schema({
         }
     }
 )
-        /*----------------------------------------------------------*/
-        // address: {
-        //     type: String,
-        //     require: true,
-           
-        // },
-        // mobilePhone: {
-        //     type: Number,
-        //     require: true,
-        //    /*----------------------------------------------------------*/
-        // },
+
 
 userSchema.methods.generateResetToken = function() {
     // Generate a random token
     const token = require('crypto').randomBytes(2).toString('hex');
-    // Set the reset password token
+
     this.resetPasswordToken = token;
-    // Set the expiration time to 1 hour from now
-    this.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+    this.resetPasswordExpires = Date.now() + 60000; // 1 hour
+
+    this.save();
+
     return token;
 };
 
