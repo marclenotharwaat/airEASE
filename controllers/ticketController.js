@@ -3,9 +3,11 @@ const flightModel = require('../models/flight_model');
 const ticketModel = require('../models/ticket_model');
 const httpStatus = require("../utility/https_status");
 const userModel = require('../models/user_model');
- 
+const AppError = require('../utility/app_error');
+
 const createTicket = asyncWrapper(async (req, res, next) => {
     const { kindOfTicket, ticktOwner, Flight } = req.body;
+    console.log(ticktOwner);
     const currentUser = await userModel.findById(ticktOwner);
     if (!currentUser) {
         const error = AppError.create('user not found', 404, httpStatus.FAIL)
@@ -21,30 +23,10 @@ const createTicket = asyncWrapper(async (req, res, next) => {
         const error = AppError.create('Missing required fields in request body', 400, httpStatus.FAIL)
         return next(error);
     }
-    let ticketNumber = null;
-    if (kindOfTicket == "business") {
-        ticketModel.ticketNumber = currentFlight.ecoSeats.toString() + " business";
-        ticketNumber = ticketModel.ticketNumber
-
-        if (currentFlight.busSeats == 0) {
-            const error = AppError.create("the business ticket is complet", 400, httpStatus.FAIL)
-            return next(error);
-        }
-    }
-
-    if (kindOfTicket == "economic") {
-        ticketModel.ticketNumber = currentFlight.ecoSeats.toString() + " economic";
-        ticketNumber = ticketModel.ticketNumber
-        if (currentFlight.ecoSeats == 0) {
-            const error = AppError.create("the economic ticket is complet", 400, httpStatus.FAIL)
-            return next(error);
-        }
-    }
-
-    const ticket = await new ticketModel({ ticktOwner, Flight, ticketNumber }).save();
 
 
-    let seatField;
+
+    let seatField = null;
     if (kindOfTicket === 'business') {
         seatField = { busSeats: -1 };
     } else if (kindOfTicket === 'economic') {
@@ -57,6 +39,47 @@ const createTicket = asyncWrapper(async (req, res, next) => {
             { new: true }
         );
     }
+
+
+
+
+    let ticketNumber = null;
+    if (kindOfTicket == "business") {
+        ticketModel.ticketNumber = currentFlight.busSeats.toString();
+        ticketNumber = ticketModel.ticketNumber
+
+        if (currentFlight.busSeats == 0) {
+            const error = AppError.create("the business ticket is complet", 400, httpStatus.FAIL)
+            return next(error);
+        }
+    }
+
+    if (kindOfTicket == "economic") {
+        ticketModel.ticketNumber = currentFlight.ecoSeats.toString();
+        ticketNumber = ticketModel.ticketNumber
+        if (currentFlight.ecoSeats == 0) {
+            const error = AppError.create("the economic ticket is complet", 400, httpStatus.FAIL)
+            return next(error);
+        }
+    }
+    ticketModel.departureDate = currentFlight.departureDate;
+    const departureDate = ticketModel.departureDate
+    ticketModel.abbreviationDistination = currentFlight.abbreviationDistination;
+    const abbreviationDistination = ticketModel.abbreviationDistination;
+    ticketModel.abbreviationFrom = currentFlight.abbreviationFrom;
+    const abbreviationFrom = ticketModel.abbreviationFrom;
+    ticketModel.price = currentFlight.price;
+    const price = ticketModel.price;
+    ticketModel.from = currentFlight.from;
+    const from = ticketModel.from;
+    ticketModel.distination = currentFlight.distination;
+    const distination = ticketModel.distination;
+
+
+    ticketModel.numOfFlightHour = currentFlight.numOfFlightHour
+    const numOfFlightHour = ticketModel.numOfFlightHour;
+
+    const ticket = await new ticketModel({ ticktOwner, Flight, ticketNumber, kindOfTicket, departureDate, abbreviationDistination, abbreviationFrom, price, from, distination,numOfFlightHour }).save();
     res.json({ status: httpStatus.SUCCESS, data: ticket })
 
 })
@@ -81,6 +104,7 @@ const deleteTicket = asyncWrapper(async (req, res, next) => {
     }
 
     const ticket = await new ticketModel({ ticktOwner, Flight }).deleteOne();
+
 
     let seatField;
     if (kindOfTicket === 'business') {
@@ -110,15 +134,13 @@ const getTicket = asyncWrapper(async (req, res, next) => {
             res.json({ status: httpStatus.NOT_FOUND, message: "No tickets found for the specified user." });
         }
     } catch (error) {
-        next(error);
-    }
+        next(error);}
 });
-
-
 
 const getAllTickets = asyncWrapper(
     async (req, res, next) => {
-        const tickets = await ticketModel.find({});
+        const _id = req.params.id
+        const tickets = await ticketModel.find();
         res.json({ status: httpStatus.SUCCESS, data: tickets })
     })
 
