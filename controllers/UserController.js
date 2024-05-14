@@ -97,9 +97,8 @@ const login = asyncWrapper(
       if (!user) {
         const error = AppError.create('User not found', 404, httpStatus.FAIL)
         return next(error);
-      }
+      }const hashPassword = await bcrypt.hash(password, 10);
       const matchPassword = await bcrypt.compare(password, user.password);
-
       // Validate the password
       if (!matchPassword) {
         const error = AppError.create('Incorrect password', 401, httpStatus.FAIL)
@@ -166,19 +165,68 @@ const deleteUser = asyncWrapper(
     }
   })
 
-const forgetPass = asyncWrapper(
-  async (req, res, next) => {
-    const {email} = req.body;
-    // const user = await User.find({email})
-    // if(!user){
-    //   const error = AppError.create('uesr not found' ,404 , httpStatus.FAIL)
-    //   return next(error)
-    // }
-    sendEmail.sendEmail(email)
-  }
-)
-// Other controller methods...
 
+  const forgetPass = asyncWrapper(async (req, res, next) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email }); // Use findOne() to get a single document
+    if (!user) {
+        const error = AppError.create('User not found', 404, httpStatus.FAIL);
+        return next(error);
+    }
+    const rand = user.generateResetToken(); // Call the generateResetToken() method on the user instance
+    const send_Email = await sendEmail.sendEmail(email, rand);
+    if(send_Email)
+    res.status(200).json({ message: 'Email sent successfully' });
+  else     res.status(400).json({ message: 'Email doesn\'t send ' });
+
+});
+const resetPassword = asyncWrapper(async (req, res, next) => {
+  const { email, resetPass } = req.body;
+  const user = await User.findOne({ email }); // Use findOne() to get a single document
+
+  if (!user) {
+      const error = AppError.create('User not found', 404, httpStatus.FAIL);
+      return next(error);
+  }
+
+  const resetPasswordToken = user.resetPasswordToken;
+  const timeForReset = await User.findOne({resetPasswordExpires: { $gt: Date.now() }})
+  if (!timeForReset) {
+      return res.status(200).json({ "resetPassword": false, "message": "Reset token has expired" });
+  }
+
+
+
+  // Check if the reset password token matches the one sent by the user
+  if (resetPasswordToken === resetPass) {
+      return res.status(200).json({ "resetPassword": true });
+  } else {
+      return res.status(200).json({ "resetPassword": false, "message": "Invalid reset token" });
+  }
+});
+
+const changePassword = asyncWrapper(async (req, res, next) => {
+  const { email , password } = req.body;
+  const user = await User.findOne({ email }); 
+  if (!user) {
+      const error = AppError.create('User not found', 404, httpStatus.FAIL);
+      return next(error);
+  } 
+    // Validate password
+    if (password.length < 8) {
+      const error = AppError.create('Password should be at least 8 characters long', 400, httpStatus.FAIL)
+      return next(error);
+    }
+
+    if (!/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
+      const error = AppError.create('Password should contain both letters and numbers', 400, httpStatus.FAIL)
+      return next(error);
+    }
+  const hashPassword = await bcrypt.hash(password, 10);
+  user.password = hashPassword;
+  user.save();
+  res.status(200).json({"msg" : "password Changed Successfully" , "hashedPassword" : user.password})
+});
 
 
 
@@ -187,5 +235,7 @@ module.exports = {
   login,
   deleteUser,
   updateUser,
-  forgetPass
+  forgetPass,
+  resetPassword,
+  changePassword
 }
