@@ -22,16 +22,15 @@ exports.sendEmail = async (email , rand) => {
             </div>
         `
     }; 
-    
-
     try {
-        // Create SMTP transport with the provided email
-        
+        // Create SMTP transport with the provided email 
         await smtpTransport.sendMail(mailOptions);
         console.log("Email sent successfully.");
+        return true;
     } catch (error) {
         console.log(email)
         console.error("Error sending email:", error);
+        return false;
     }
 }
 ///------------------SMTP Over-----------------------------/
