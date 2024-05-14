@@ -68,7 +68,7 @@ userSchema.methods.generateResetToken = function() {
 
     this.resetPasswordToken = token;
 
-    this.resetPasswordExpires = Date.now() + 60000; // 1 hour
+    this.resetPasswordExpires = Date.now() + 60000; // 1 Minute
 
     this.save();
 
