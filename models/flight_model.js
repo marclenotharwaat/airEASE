@@ -1,32 +1,32 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const flightSchema = new mongoose.Schema({
   from: {
-    type: String
+    type: String,
   },
-  distination : {
-    type: String
+  to: {
+    type: String,
   },
-  abbreviationFrom:String ,
-  abbreviationDistination:String,
+  abbreviationFrom: String,
+  abbreviationTo: String,
   departureDate: {
-    type: Date
+    type: Date,
   },
   arrivalDate: {
-    type: Date
+    type: Date,
   },
   price: {
-    type: Number
+    type: Number,
   },
   busSeats: {
-    type: Number
+    type: Number,
   },
   ecoSeats: {
-    type: Number
+    type: Number,
   },
-  numOfFlightHour :String 
+  numOfFlightHour: String,
 });
 
-const Flight = mongoose.model('Flight', flightSchema);
+const Flight = mongoose.model("Flight", flightSchema);
 
 module.exports = Flight;

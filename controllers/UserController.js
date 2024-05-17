@@ -6,6 +6,7 @@ const asyncWrapper = require('../middleware/asyncWrapper');
 const AppError = require('../utility/app_error')
 const bcrypt = require('bcrypt');
 const sendEmail = require('../utility/send_Email')
+
 const signup = asyncWrapper(
   async (req, res, next) => {
 

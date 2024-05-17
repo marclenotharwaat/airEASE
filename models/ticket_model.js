@@ -9,7 +9,7 @@ const ticketSchema = new mongoose.Schema(
     from: {
       type: String
     },
-    distination: {
+    to: {
       type: String
     },
     price: {
@@ -22,7 +22,7 @@ const ticketSchema = new mongoose.Schema(
     departureDate: {
       type: Date
     },
-    abbreviationDistination: String,
+    abbreviationTo: String,
     abbreviationFrom: String,
     kindOfTicket: {
       type: String,

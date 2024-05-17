@@ -64,22 +64,22 @@ const createTicket = asyncWrapper(async (req, res, next) => {
     }
     ticketModel.departureDate = currentFlight.departureDate;
     const departureDate = ticketModel.departureDate
-    ticketModel.abbreviationDistination = currentFlight.abbreviationDistination;
-    const abbreviationDistination = ticketModel.abbreviationDistination;
+
+    ticketModel.abbreviationTo = currentFlight.abbreviationTo;
+    const abbreviationTo = ticketModel.abbreviationTo;
+
     ticketModel.abbreviationFrom = currentFlight.abbreviationFrom;
     const abbreviationFrom = ticketModel.abbreviationFrom;
+
     ticketModel.price = currentFlight.price;
     const price = ticketModel.price;
     ticketModel.from = currentFlight.from;
     const from = ticketModel.from;
-    ticketModel.distination = currentFlight.distination;
-    const distination = ticketModel.distination;
-
-
+    ticketModel.to = currentFlight.to;
+    const to = ticketModel.to;
     ticketModel.numOfFlightHour = currentFlight.numOfFlightHour
     const numOfFlightHour = ticketModel.numOfFlightHour;
-
-    const ticket = await new ticketModel({ ticktOwner, Flight, ticketNumber, kindOfTicket, departureDate, abbreviationDistination, abbreviationFrom, price, from, distination,numOfFlightHour }).save();
+    const ticket = await new ticketModel({ ticktOwner, Flight, ticketNumber, kindOfTicket, departureDate, abbreviationTo, abbreviationFrom, price, from, to, numOfFlightHour }).save();
     res.json({ status: httpStatus.SUCCESS, data: ticket })
 
 })
@@ -126,7 +126,7 @@ const deleteTicket = asyncWrapper(async (req, res, next) => {
 
 const getTicket = asyncWrapper(async (req, res, next) => {
     const userId = req.params; // Assuming userId is provided in the request parameters
-    try {       
+    try {
         const tickets = await ticketModel.find({ ticktOwner: userId.id });
         if (tickets.length > 0) {
             res.json({ status: httpStatus.SUCCESS, data: tickets });
@@ -134,7 +134,8 @@ const getTicket = asyncWrapper(async (req, res, next) => {
             res.json({ status: httpStatus.NOT_FOUND, message: "No tickets found for the specified user." });
         }
     } catch (error) {
-        next(error);}
+        next(error);
+    }
 });
 
 const getAllTickets = asyncWrapper(
